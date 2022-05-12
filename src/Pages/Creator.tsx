@@ -7,9 +7,14 @@ import { Footer } from '../Components/Footer';
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { TextField } from '@mui/material';
+import { List, ListItemButton, ListItemIcon, ListItemText, ListSubheader, TextField } from '@mui/material';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import SendIcon from '@mui/icons-material/Send';
+import HelpIcon from '@mui/icons-material/Help';
+import SaveIcon from '@mui/icons-material/Save';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
 interface Symbol {
   symbol: string;
@@ -179,12 +184,31 @@ class Creator extends React.Component<any, any> {
           </Grid>
           <Grid item xs={3}>
             {/* Unsure if we shouild reuse navigation to keep here for now. */}
-            <div className="sidenav">
-              <Button variant="outlined" href="#help-create">Help</Button>
-              <Button variant="outlined" href="#">Add question</Button>
-              <Button variant="outlined" href="#" onClick={() => this.save()}>Save as file</Button>
-              <Button variant="outlined" component="label"><input type="file" hidden onChange={e => this.load(e)}/>Load from file</Button>
-            </div>
+            <Paper elevation={3} className="browser">
+            <List
+              sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+              component="nav"
+              aria-labelledby="nested-list-subheader"
+            >
+              <ListItemButton component="a" href="#help-create">
+                <ListItemIcon><HelpIcon /></ListItemIcon>
+                <ListItemText primary="Help" />
+              </ListItemButton>
+              <ListItemButton>
+                <ListItemIcon><CheckBoxIcon /></ListItemIcon>
+                <ListItemText primary="Add Question" />
+              </ListItemButton>
+              <ListItemButton onClick={() => this.save()}>
+                <ListItemIcon><SaveIcon /></ListItemIcon>
+                <ListItemText primary="Save as File" />
+              </ListItemButton>
+              <ListItemButton component="label">
+                <input type="file" hidden onChange={e => this.load(e)}/>
+                <ListItemIcon><UploadFileIcon /></ListItemIcon>
+                <ListItemText primary="Load from File" />
+              </ListItemButton>
+            </List>
+            </Paper>
           </Grid>
         </Grid>
         <HelpCreator />

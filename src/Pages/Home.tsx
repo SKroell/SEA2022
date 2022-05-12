@@ -1,17 +1,16 @@
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import { Header } from '../Components/Header';
 import './../App.css';
 
 const Home = () => {
   return (
     <div className="App">
-    <h1 style={{ textAlign: 'center' }}>JavaScript DCR Graphs Engine</h1>
-
-    <p style={{ textAlign: 'center' }}>
-      <a href="creator"><button id="btn-front-page">Creator</button></a>
-      <a href="solver"><button id="btn-front-page">Solver</button></a>
-      <button id="btn">Test Export</button>
-    </p>
-
-    <script src="js/Control/exercise_logic.js"></script>
+      <Header title="JavaScript DCR Graphs Engine"/>
+      <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
+        <Button href="creator" variant="contained" size="large">Creator</Button>
+        <Button href="solver" variant="contained" size="large">Solver</Button>
+      </Stack>
     </div>
   );
 }
