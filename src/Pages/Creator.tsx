@@ -111,6 +111,15 @@ class Creator extends React.Component<any, any> {
     saveFile(blob);
   }
 
+  load(e: any){
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.readAsText(file);
+    reader.onload = () => {
+      const exercise = JSON.parse(reader.result as string);
+      this.setState({ exercise: exercise });
+    }
+  }
 
   scenario(scenario: Scenario, index: number) {
     return (
@@ -171,9 +180,10 @@ class Creator extends React.Component<any, any> {
           <Grid item xs={3}>
             {/* Unsure if we shouild reuse navigation to keep here for now. */}
             <div className="sidenav">
-              <Button variant="outlined" href="#help-create">Help!</Button>
-              <Button variant="outlined" href="#">Add question!</Button>
-              <Button variant="outlined" href="#" onClick={() => this.save()}>Save as file!</Button>
+              <Button variant="outlined" href="#help-create">Help</Button>
+              <Button variant="outlined" href="#">Add question</Button>
+              <Button variant="outlined" href="#" onClick={() => this.save()}>Save as file</Button>
+              <Button variant="outlined" component="label"><input type="file" hidden onChange={e => this.load(e)}/>Load from file</Button>
             </div>
           </Grid>
         </Grid>
