@@ -1,5 +1,8 @@
 import React from 'react';
 import './../App.css';
+import './../Util/dcr.js';
+import {parser} from './../Util/dcr_parser.js';
+
 import { Header } from '../Components/Header';
 import { HelpCreator } from '../Components/Help';
 import { Footer } from '../Components/Footer';
@@ -7,10 +10,9 @@ import { Footer } from '../Components/Footer';
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { List, ListItemButton, ListItemIcon, ListItemText, ListSubheader, TextField } from '@mui/material';
+import { Alert, List, ListItemButton, ListItemIcon, ListItemText, TextField } from '@mui/material';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import SendIcon from '@mui/icons-material/Send';
 import HelpIcon from '@mui/icons-material/Help';
 import SaveIcon from '@mui/icons-material/Save';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
@@ -54,6 +56,7 @@ class Creator extends React.Component<any, any> {
     super(props);
     this.state = {
       exercise: new Exercise(),
+      parseError: "",
     };
   }
 
@@ -81,6 +84,16 @@ class Creator extends React.Component<any, any> {
         break;
     }
     this.setState({ exercise: newExercise });
+  }
+
+  parseSolution(e: any) {
+    try {
+      let graph = parser.parse(e.target.value);
+      this.setState({parseError: ""})
+    } catch (err: any) {
+      this.setState({parseError: (err.message + "</br>" + JSON.stringify(err.location))})
+    }
+
   }
 
   // Adds a new symbol/activity mapping to the exercise
@@ -181,9 +194,23 @@ class Creator extends React.Component<any, any> {
               <Button variant="outlined" id="more_fields" onClick={() => this.addScenarioFields()}>Add More</Button>
               <Button variant="outlined" id="less_fields" onClick={() => this.removeScenarioFields(this.state.exercise.scenarios.count)}>Remove Field</Button>
             </Paper>
+
+            <Paper elevation={3} className="browser">
+              <h2>Let's check using a reference solution! (optional)</h2>
+              <TextField fullWidth
+                id="outlined-multiline-static"
+                label="Reference Solution:"
+                multiline
+                rows={4}
+                defaultValue="A(0,0,0)"
+                onChange={e => this.parseSolution(e)}
+              />
+              {this.state.parseError === "" ? "" : <Alert severity="error">{this.state.parseError}</Alert>}
+            </Paper>
           </Grid>
-          <Grid item xs={3}>
+
             {/* Unsure if we shouild reuse navigation to keep here for now. */}
+          <Grid item xs={3}>
             <Paper elevation={3} className="browser">
             <List
               sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}

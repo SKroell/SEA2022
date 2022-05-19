@@ -1,3 +1,4 @@
+/* eslint-disable no-eval */
 /* 
  Basic DCR Engine supporting:
  - Condition, response, include, exclude, milestone
@@ -5,6 +6,8 @@
  - Time
  - Guarded relations (BEWARE: guard expressions are evaluated with eval(), use at own risk.)
 */
+
+
 class Marking {
     constructor(e, p, i) {
         this.executed = e;
@@ -12,10 +15,10 @@ class Marking {
         this.pending = i;
         this.lastExecuted = undefined;
         this.deadline = undefined;
-        this.value;
+        this.value = undefined;
     }
     toString() {
-        return "(" + (executed ? 1 : 0) + "," + (included ? 1 : 0) + "," + (pending ? 1 : 0) + ")";
+        return "(" + (this.executed ? 1 : 0) + "," + (this.included ? 1 : 0) + "," + (this.pending ? 1 : 0) + ")";
     }
 }
 
@@ -140,7 +143,7 @@ class Event{
 
 }
 
-class DCRGraph {
+export class DCRGraph {
     parent = undefined;
     parentGraphTemp = undefined;
     events = new Map();
