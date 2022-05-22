@@ -158,7 +158,7 @@ class Creator extends React.Component<any, any> {
     return (
       <div className="App">
         {/* Re-useable Header */}
-        <Header title="Create a new dcr learning exercise!" />
+        <Header title="Create a new DCR learning exercise!" />
 
         <Grid container>
           <Grid item xs={9}>
@@ -209,7 +209,7 @@ class Creator extends React.Component<any, any> {
             </Paper>
           </Grid>
 
-            {/* Unsure if we shouild reuse navigation to keep here for now. */}
+            {/* Unsure if we should reuse navigation to keep here for now. */}
           <Grid item xs={3}>
             <Paper elevation={3} className="browser">
             <List
