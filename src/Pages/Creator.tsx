@@ -36,7 +36,7 @@ class Exercise {
   constructor() {
     this.question = "";
     this.symbols = [{ symbol: "", activity: "" }];
-    this.scenarios = [{ scenario: "", allowed: false, hint: "" }];
+    this.scenarios = [{ scenario: "", allowed: true, hint: "" }];
   }
 }
 
@@ -55,8 +55,9 @@ class Creator extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-      exercise: new Exercise(),
+      exercises: [new Exercise()],
       parseError: "",
+      currentQuestion: 0,
     };
   }
 
@@ -106,13 +107,14 @@ class Creator extends React.Component<any, any> {
   // Adds a new scenario to the exercise
   addScenarioFields() {
     let scenarios = this.state.exercise.scenarios;
-    scenarios.push({ scenario: "", allowed: false, hint: "" });
+    scenarios.push({ scenario: "", allowed: true, hint: "" });
     this.setState({ exercise: { ...this.state.exercise, scenarios: scenarios } });
   }
 
   // Removes a symbol/activity mapping from the exercise
   removeSymbolFields(index: number) {
     let symbols = this.state.exercise.symbols;
+    if(symbols.length <= 1) return;
     symbols.splice(index, 1);
     this.setState({ exercise: { ...this.state.exercise, symbols: symbols } });
   }
@@ -120,8 +122,13 @@ class Creator extends React.Component<any, any> {
   // Removes a scenario from the exercise
   removeScenarioFields(index: number) {
     let scenarios = this.state.exercise.scenarios;
+    if(scenarios.length <= 1) return;
     scenarios.splice(index, 1);
     this.setState({ exercise: { ...this.state.exercise, scenarios: scenarios } });
+  }
+
+  addQuestion() {
+    
   }
 
   save() {
