@@ -1,11 +1,9 @@
 import React from 'react';
-import { Exercise, Scenario, Symbol } from '../Util/Entity/Exercise';
-
 import './../App.css';
 import './../Util/dcr.js';
 import {parser} from './../Util/dcr_parser.js';
 
-
+import { Exercise, Scenario, Symbol } from '../Util/Exercise';
 import { Header } from '../Components/Header';
 import { HelpCreator } from '../Components/Help';
 import { Footer } from '../Components/Footer';
