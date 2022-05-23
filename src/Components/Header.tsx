@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom"
 import AppBar from "@mui/material/AppBar";
 import Button from "@mui/material/Button";
 import Toolbar from "@mui/material/Toolbar";
@@ -16,8 +17,8 @@ export const Header = ({ title }: HeaderProps) => {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           JavaScript DCR Graphs Engine
         </Typography>
-        <Button href="/" color="inherit">Creator</Button>
-        <Button href="/" color="inherit">Solver</Button>
+        <NavLink className={({isActive}) => (isActive ? 'active-btn' : 'inactive-btn')} to="/creator"><Button color="inherit">Creator</Button></NavLink>
+        <NavLink className={({isActive}) => (isActive ? 'active-btn' : 'inactive-btn')} to="/solver" ><Button color="inherit">Solver</Button></NavLink>
         </Toolbar>
       </AppBar>
       <header>

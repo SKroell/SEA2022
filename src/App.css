@@ -119,3 +119,13 @@ p {
   max-height: 65%;
   overflow: auto;
 }
+.active-btn {
+  background-color: white;
+  text-decoration: none;
+  color:#1976d2;
+}
+
+.inactive-btn {
+  color: inherit;
+  text-decoration: none;
+}
