@@ -10,7 +10,7 @@ import { Footer } from '../Components/Footer';
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { Alert, List, ListItemButton, ListItemIcon, ListItemText, TextField } from '@mui/material';
+import { Alert, List, ListItemButton, ListItemIcon, ListItemText, Pagination, TextField } from '@mui/material';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import HelpIcon from '@mui/icons-material/Help';
@@ -33,10 +33,12 @@ class Exercise {
   question: string;
   symbols: Symbol[];
   scenarios: Scenario[];
+  solution: string;
   constructor() {
     this.question = "";
     this.symbols = [{ symbol: "", activity: "" }];
-    this.scenarios = [{ scenario: "", allowed: false, hint: "" }];
+    this.scenarios = [{ scenario: "", allowed: true, hint: "" }];
+    this.solution = "";
   }
 }
 
@@ -55,14 +57,15 @@ class Creator extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-      exercise: new Exercise(),
+      exercises: [new Exercise()],
       parseError: "",
+      currentQuestion: 0,
     };
   }
 
   // Handles changes to the form and updates the state
   handleChange(i: number, e: any) {
-    let newExercise = this.state.exercise;
+    let newExercise = this.state.exercises[this.state.currentQuestion] as Exercise;
     switch (e.target.id) {
       case "question":
         newExercise.question = e.target.value;
@@ -87,9 +90,11 @@ class Creator extends React.Component<any, any> {
   }
 
   parseSolution(e: any) {
+    let newExercise = this.state.exercises[this.state.currentQuestion] as Exercise;
+    newExercise.solution = e.target.value;
     try {
       let graph = parser.parse(e.target.value);
-      this.setState({parseError: ""})
+      this.setState({exercise: newExercise, parseError: ""})
     } catch (err: any) {
       this.setState({parseError: (err.message + "</br>" + JSON.stringify(err.location))})
     }
@@ -98,34 +103,50 @@ class Creator extends React.Component<any, any> {
 
   // Adds a new symbol/activity mapping to the exercise
   addSymbolFields() {
-    let symbols = this.state.exercise.symbols;
-    symbols.push({ symbol: "", activity: "" });
-    this.setState({ exercise: { ...this.state.exercise, symbols: symbols } });
+    let exercises = this.state.exercises
+    let exercise = exercises[this.state.currentQuestion]
+    exercise.symbols.push({ symbol: "", activity: "" });
+    exercises.splice(this.state.currentQuestion, 1, exercise)
+    this.setState({ exercises: exercises });
   }
 
   // Adds a new scenario to the exercise
   addScenarioFields() {
-    let scenarios = this.state.exercise.scenarios;
-    scenarios.push({ scenario: "", allowed: false, hint: "" });
-    this.setState({ exercise: { ...this.state.exercise, scenarios: scenarios } });
+    let exercises = this.state.exercises
+    let exercise = exercises[this.state.currentQuestion]
+    exercise.scenarios.push({ scenario: "", allowed: true, hint: "" });
+    this.setState({ exercises: exercises });
   }
 
   // Removes a symbol/activity mapping from the exercise
   removeSymbolFields(index: number) {
-    let symbols = this.state.exercise.symbols;
+    let exercises = this.state.exercises
+    let exercise = exercises[this.state.currentQuestion]
+    let symbols = exercise.symbols;
+    if(symbols.length <= 1) return;
     symbols.splice(index, 1);
-    this.setState({ exercise: { ...this.state.exercise, symbols: symbols } });
+    this.setState({ exercises: exercises });
   }
 
   // Removes a scenario from the exercise
   removeScenarioFields(index: number) {
-    let scenarios = this.state.exercise.scenarios;
+    let exercises = this.state.exercises
+    let exercise = exercises[this.state.currentQuestion]
+    let scenarios = exercise.scenarios;
+    if(scenarios.length <= 1) return;
     scenarios.splice(index, 1);
-    this.setState({ exercise: { ...this.state.exercise, scenarios: scenarios } });
+    this.setState({ exercises: exercises });
+  }
+
+  addQuestion() {
+    // Add exercise to exercise list
+    let exercises = this.state.exercises
+    let len = exercises.push(new Exercise())
+    this.setState({exercises: exercises, currentQuestion: len-1})
   }
 
   save() {
-    const blob = new Blob([JSON.stringify(this.state.exercise, null, 4)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(this.state.exercises, null, 4)], { type: 'application/json' });
     saveFile(blob);
   }
 
@@ -134,8 +155,8 @@ class Creator extends React.Component<any, any> {
     const reader = new FileReader();
     reader.readAsText(file);
     reader.onload = () => {
-      const exercise = JSON.parse(reader.result as string);
-      this.setState({ exercise: exercise });
+      const exercises = JSON.parse(reader.result as string);
+      this.setState({ exercises: exercises });
     }
   }
 
@@ -155,23 +176,25 @@ class Creator extends React.Component<any, any> {
   }
 
   render() {
+    let cq = this.state.currentQuestion
+    let exercise = this.state.exercises[cq]
     return (
       <div className="App">
         {/* Re-useable Header */}
         <Header title="Create a new dcr learning exercise!" />
-
+        <Pagination variant="outlined" shape="rounded" count={this.state.exercises.length} page={cq+1} onChange={(e, page) => this.setState({currentQuestion: page-1})}/>
         <Grid container>
           <Grid item xs={9}>
             <Paper elevation={3} className="browser">
               <h2>What is the description for the exercise?!</h2>
-              <TextField fullWidth id="question" label="question" variant="filled" placeholder="Description" onChange={e => this.handleChange(0, e)} />
+              <TextField fullWidth id="question" label="question" variant="filled" placeholder="Description" value={exercise.question} onChange={e => this.handleChange(0, e)} />
               {/* <input type="text" id="question" name="question" size={65} placeholder="Description" /> */}
             </Paper>
 
             <Paper elevation={3} className="browser">
               <h2>Which symbol represents what activity?!</h2>
               <Grid container spacing={2} component="form">
-                {this.state.exercise.symbols.map((symbol: Symbol, index: number) => (
+                {exercise.symbols.map((symbol: Symbol, index: number) => (
                   <>
                     <Grid item xs={6}><TextField fullWidth id="sym" label="Symbol" variant="outlined" value={symbol.symbol} onChange={e => this.handleChange(index, e)} /></Grid>
                     <Grid item xs={6}><TextField fullWidth id="act" label="Activity" variant="filled" value={symbol.activity} onChange={e => this.handleChange(index, e)} /></Grid>
@@ -180,19 +203,19 @@ class Creator extends React.Component<any, any> {
               </Grid>
               <br />
               <Button variant="outlined" id="add_more_fields" onClick={() => this.addSymbolFields()}>Add More</Button>
-              <Button variant="outlined" id="remove_fields" onClick={() => this.removeSymbolFields(this.state.exercise.symbols.count)}>Remove Field</Button>
+              <Button variant="outlined" id="remove_fields" onClick={() => this.removeSymbolFields(exercise.symbols.length-1)}>Remove Field</Button>
             </Paper>
 
             <Paper elevation={3} className="browser">
               <h2>Add allowed and forbidden scenarios for the exercise!</h2>
               <Grid container spacing={2} component="form">
-                {this.state.exercise.scenarios.map((value: Scenario, index: number) => (
+                {exercise.scenarios.map((value: Scenario, index: number) => (
                   <>{this.scenario(value, index)}</>
                 ))}
               </Grid>
               <br />
               <Button variant="outlined" id="more_fields" onClick={() => this.addScenarioFields()}>Add More</Button>
-              <Button variant="outlined" id="less_fields" onClick={() => this.removeScenarioFields(this.state.exercise.scenarios.count)}>Remove Field</Button>
+              <Button variant="outlined" id="less_fields" onClick={() => this.removeScenarioFields(this.state.exercise.scenarios.length-1)}>Remove Field</Button>
             </Paper>
 
             <Paper elevation={3} className="browser">
@@ -202,7 +225,7 @@ class Creator extends React.Component<any, any> {
                 label="Reference Solution:"
                 multiline
                 rows={4}
-                defaultValue="A(0,0,0)"
+                value={exercise.solution}
                 onChange={e => this.parseSolution(e)}
               />
               {this.state.parseError === "" ? "" : <Alert severity="error">{this.state.parseError}</Alert>}
@@ -221,7 +244,7 @@ class Creator extends React.Component<any, any> {
                 <ListItemIcon><HelpIcon /></ListItemIcon>
                 <ListItemText primary="Help" />
               </ListItemButton>
-              <ListItemButton>
+              <ListItemButton onClick={() => this.addQuestion()}>
                 <ListItemIcon><CheckBoxIcon /></ListItemIcon>
                 <ListItemText primary="Add Question" />
               </ListItemButton>
