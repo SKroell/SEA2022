@@ -10,33 +10,21 @@ import { Footer } from '../Components/Footer';
 
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { Alert, List, ListItemButton, ListItemIcon, ListItemText, TextField } from '@mui/material';
+import { Alert, List, ListItemButton, ListItemIcon, ListItemText, Pagination, TextField } from '@mui/material';
 import HelpIcon from '@mui/icons-material/Help';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import HintIcon from '@mui/icons-material/Lightbulb';
 import NextIcon from '@mui/icons-material/PlayArrow';
-
-interface Symbol {
-  symbol: string;
-  activity: string;
-}
-
-class ExerciseSolver {
-  question: string;
-  symbols: Symbol[];
-  constructor() {
-    this.question = "";
-    this.symbols = [{ symbol: "", activity: "" }];
-  }
-}
+import { Exercise, Symbol } from '../Util/Exercise';
 
 // Main page of the application
 class Solver extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-      exercise: new ExerciseSolver(),
+      exercises: [new Exercise()],
       parseError: "",
+      currentQuestion: 0,
     };
   }
 
@@ -88,8 +76,8 @@ class Solver extends React.Component<any, any> {
     const reader = new FileReader();
     reader.readAsText(file);
     reader.onload = () => {
-      const exercise = JSON.parse(reader.result as string);
-      this.setState({ exercise: exercise });
+      const exercises = JSON.parse(reader.result as string);
+      this.setState({ exercises: exercises });
     }
   }
 
@@ -102,10 +90,13 @@ class Solver extends React.Component<any, any> {
   }
 
   render() {
+    let cq = this.state.currentQuestion
+    let exercise = this.state.exercises[cq]
     return (
       <div className="App">
         {/* Re-useable Header */}
         <Header title="Solve a DCR training exercise!" />
+        <Pagination variant="outlined" shape="rounded" count={this.state.exercises.length} page={cq+1} onChange={(e, page) => this.setState({currentQuestion: page-1})}/>
         <Grid container>
           <Grid item xs={9}>
             {/* TODO: this should load the dynamicTable */}
@@ -118,17 +109,17 @@ class Solver extends React.Component<any, any> {
 
             <Paper elevation={3} className="browser">
               <h2>Here is the description for the exercise.</h2>
-              <TextField fullWidth id="question" label="question" variant="filled" placeholder="Description" onChange={e => this.handleChange(0, e)} />
+              <TextField fullWidth id="question" label="question" variant="filled" placeholder="Description" value={exercise.question} InputProps={{readOnly: true}} />
               {/* <input type="text" id="question" name="question" size={65} placeholder="Description" /> */}
             </Paper>
             
             <Paper elevation={3} className="browser">
               <h2>And these are the symbols and the activities that they represent!</h2>
               <Grid container spacing={2} component="form"> 
-                {this.state.exercise.symbols.map((symbol: Symbol, index: number) => (
+                {exercise.symbols.map((symbol: Symbol, index: number) => (
                   <>
-                    <Grid item xs={6}><TextField fullWidth id="sym" label="Symbol" variant="outlined" value={symbol.symbol} onChange={e => this.handleChange(index, e)} /></Grid>
-                    <Grid item xs={6}><TextField fullWidth id="act" label="Activity" variant="filled" value={symbol.activity} onChange={e => this.handleChange(index, e)} /></Grid>
+                    <Grid item xs={6}><TextField fullWidth id="sym" label="Symbol" variant="outlined" value={symbol.symbol} InputProps={{readOnly: true}} /></Grid>
+                    <Grid item xs={6}><TextField fullWidth id="act" label="Activity" variant="filled" value={symbol.activity} InputProps={{readOnly: true}} /></Grid>
                   </>
                 ))}
               </Grid>
