@@ -4,8 +4,8 @@ import './../Util/dcr.js';
 import {parser} from './../Util/dcr_parser.js';
 import {dynamicTable} from './../Util/dynamic_table.js';
 
-import { Header } from '../Components/HeaderSolver';
-import { HelpSolver } from '../Components/HelpSolver';
+import { Header } from '../Components/Header';
+import { HelpSolver } from '../Components/Help';
 import { Footer } from '../Components/Footer';
 
 import Grid from '@mui/material/Grid';
@@ -74,16 +74,12 @@ class Solver extends React.Component<any, any> {
   }
 
   // Adds a new symbol/activity mapping to the exercise
+  // This is a function that can be used to help loading of a new 
+  // excercise, but note that the fields should be read-only (other 
+  // solutions are of course possible.)
   addSymbolFields() {
     let symbols = this.state.exercise.symbols;
     symbols.push({ symbol: "", activity: "" });
-    this.setState({ exercise: { ...this.state.exercise, symbols: symbols } });
-  }
-
-  // Removes a symbol/activity mapping from the exercise
-  removeSymbolFields(index: number) {
-    let symbols = this.state.exercise.symbols;
-    symbols.splice(index, 1);
     this.setState({ exercise: { ...this.state.exercise, symbols: symbols } });
   }
 
