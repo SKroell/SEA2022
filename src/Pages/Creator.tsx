@@ -1,7 +1,10 @@
 import React from 'react';
+import { Exercise, Scenario, Symbol } from '../Util/Entity/Exercise';
+
 import './../App.css';
 import './../Util/dcr.js';
 import {parser} from './../Util/dcr_parser.js';
+
 
 import { Header } from '../Components/Header';
 import { HelpCreator } from '../Components/Help';
@@ -17,30 +20,6 @@ import HelpIcon from '@mui/icons-material/Help';
 import SaveIcon from '@mui/icons-material/Save';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-
-interface Symbol {
-  symbol: string;
-  activity: string;
-}
-
-interface Scenario {
-  scenario: string;
-  allowed: boolean;
-  hint: string;
-}
-
-class Exercise {
-  question: string;
-  symbols: Symbol[];
-  scenarios: Scenario[];
-  solution: string;
-  constructor() {
-    this.question = "";
-    this.symbols = [{ symbol: "", activity: "" }];
-    this.scenarios = [{ scenario: "", allowed: true, hint: "" }];
-    this.solution = "";
-  }
-}
 
 const saveFile = async (blob: Blob) => {
   const a = document.createElement('a');
