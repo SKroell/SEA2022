@@ -3,6 +3,7 @@ import './../App.css';
 import './../Util/dcr.js';
 import {parser} from './../Util/dcr_parser.js';
 import {dynamicTable} from './../Util/dynamic_table.js';
+import { Exercise, Symbol } from '../Util/Entity/Exercise';
 
 import { Header } from '../Components/Header';
 import { HelpSolver } from '../Components/Help';
@@ -15,40 +16,35 @@ import HelpIcon from '@mui/icons-material/Help';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import HintIcon from '@mui/icons-material/Lightbulb';
 import NextIcon from '@mui/icons-material/PlayArrow';
-import { Exercise, Symbol } from '../Util/Exercise';
+import LinearProgress from '@mui/material/LinearProgress';
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 // Main page of the application
+//I have added fields, such that it is treated somewhat as a "Progress class"
 class Solver extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
       exercises: [new Exercise()],
       parseError: "",
-      currentQuestion: 0,
+      currentQuestion: 0,   
+      percentExercises: 0,
+      percentForbidden: 50,
+      percentRequired: 50                  
     };
   }
 
-  // Handles changes to the form and updates the state
-  handleChange(i: number, e: any) {
-    let newExercise = this.state.exercise;
-    switch (e.target.id) {
-      case "question":
-        newExercise.question = e.target.value;
-        break;
-      case "sym":
-        newExercise.symbols[i].symbol = e.target.value;
-        break;
-      case "act":
-        newExercise.symbols[i].activity = e.target.value;
-        break;
-      case "scn":
-        newExercise.scenarios[i].scenario = e.target.value;
-        break;
-      case "hnt":
-        newExercise.scenarios[i].hint = e.target.value;
-        break;
-    }
-    this.setState({ exercise: newExercise });
+  //This function gets the progress in percentage
+  handleProgress(){
+    let exerciseLen = this.state.exercises.length 
+    let currentIndex = this.state.currentQuestion + 1
+    let percent = currentIndex/exerciseLen * 100
+    this.setState({percentExercises: percent})
+  }
+
+  handleProgressForbiddenRequired(){
+    throw new Error("not Implemented") // TODO
   }
 
   parseSolution(e: any) {
@@ -61,6 +57,7 @@ class Solver extends React.Component<any, any> {
 
   }
 
+  
   // Adds a new symbol/activity mapping to the exercise
   // This is a function that can be used to help loading of a new 
   // excercise, but note that the fields should be read-only (other 
@@ -81,13 +78,25 @@ class Solver extends React.Component<any, any> {
     }
   }
 
-  hint(){
+  getHint(){
     throw new Error("not Implemented") // TODO
   }
 
-  next(){
-    throw new Error("not Implemented") // TODO
+  nextQuestion(){
+    let exercises = this.state.exercises
+    let oldQuestion = this.state.currentQuestion
+    if ( exercises.length > oldQuestion + 1){
+      this.setState({currentQuestion: oldQuestion + 1}, () => {this.handleProgress()})
+    }
   }
+
+  prevQuestion(){
+    let oldQuestion = this.state.currentQuestion
+    if(oldQuestion > 0){
+      this.setState({currentQuestion: oldQuestion - 1}, () => {this.handleProgress()})
+    }
+  }
+
 
   render() {
     let cq = this.state.currentQuestion
@@ -157,13 +166,17 @@ class Solver extends React.Component<any, any> {
                 <ListItemIcon><UploadFileIcon /></ListItemIcon>
                 <ListItemText primary="Load from File" />
               </ListItemButton>
-              <ListItemButton onClick={() => this.hint()}>
+              <ListItemButton onClick={() => this.getHint()}>
                 <ListItemIcon><HintIcon /></ListItemIcon>
                 <ListItemText primary="Get hint" />
               </ListItemButton>
-              <ListItemButton onClick={() => this.next()}>
+              <ListItemButton onClick={() => this.nextQuestion()}>
                 <ListItemIcon><NextIcon /></ListItemIcon>
                 <ListItemText primary="Next exercise" />
+              </ListItemButton>
+              <ListItemButton onClick={() => this.prevQuestion()}>
+                <ListItemIcon><NextIcon /></ListItemIcon>
+                <ListItemText primary="Previous exercise" />
               </ListItemButton>
             </List>
             </Paper>
@@ -176,16 +189,17 @@ class Solver extends React.Component<any, any> {
               component="nav"
               aria-labelledby="nested-list-subheader"
             >
-              {/* TODO: these should be progress bars (not buttons) */}
-              <ListItemButton component="label">
-                <ListItemText primary="*** Progress bar for Questions here" />
-              </ListItemButton>
-              <ListItemButton component="label">
-                <ListItemText primary="*** Progress bar for Allowed Scenarios here" />
-              </ListItemButton>
-              <ListItemButton component="label">
-                <ListItemText primary="*** Progress bar for Forbidden Scenarios here" />
-              </ListItemButton>
+              {/* TODO: the line progressbar should probably be moved to the top of the page */}
+              
+              <ListItemText primary="Progress for Questions!" />
+             
+              <LinearProgress variant="determinate" color="primary" value={this.state.percentExercises} />
+
+              <ListItemText primary="Progress for Allowed Scenarios!" />
+              
+              <CircularProgress variant="determinate" value={this.state.percentRequired} />
+              <ListItemText primary="Progress for Forbidden Scenarios!" />
+              <CircularProgress variant="determinate" value={this.state.percentForbidden} />
             </List>
             </Paper>
           </Grid>
