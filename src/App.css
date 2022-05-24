@@ -22,7 +22,7 @@
 #task-table {
   font-family: calibri, arial;
   border-collapse: collapse;
-  width: 400px;
+  width: 100%;
 }
 
 #task-table td {

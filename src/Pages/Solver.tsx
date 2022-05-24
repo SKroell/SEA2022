@@ -1,16 +1,13 @@
 import React from 'react';
+import ReactDOMServer from "react-dom/server";
 import './../App.css';
 import './../Util/dcr.js';
 import './../Util/dcr_parser.js';
 import './../Util/dynamic_table';
 import './../Util/GUI.js';
+
 import { DCRGraph } from './../Util/dcr.js';
-
-import {dynamicTable} from './../Util/dynamic_table';
-
-
 import {parser} from './../Util/dcr_parser.js';
-import { Exercise, Symbol, Scenario } from '../Util/Entity/Exercise';
 
 import { Header } from '../Components/Header';
 import { HelpSolver } from '../Components/Help';
@@ -18,7 +15,7 @@ import { Footer } from '../Components/Footer';
 
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { Alert, List, ListItemButton, ListItemIcon, ListItemText, Pagination, TextField } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Alert, Button, List, ListItemButton, ListItemIcon, ListItemText, Pagination, TextField, Typography } from '@mui/material';
 import HelpIcon from '@mui/icons-material/Help';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import HintIcon from '@mui/icons-material/Lightbulb';
@@ -26,6 +23,8 @@ import NextIcon from '@mui/icons-material/PlayArrow';
 import LinearProgress from '@mui/material/LinearProgress';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Exercise, Symbol } from '../Util/Exercise';
 
 // Main page of the application
 //I have added fields, such that it is treated somewhat as a "Progress class"
@@ -39,7 +38,7 @@ class Solver extends React.Component<any, any> {
       percentExercises: 0,
       percentForbidden: 0,
       percentRequired: 0,  
-      graph1: new DCRGraph()                
+      graph: parser.parse(""),                
     };
   }
 
@@ -48,13 +47,55 @@ class Solver extends React.Component<any, any> {
     let exerciseLen = this.state.exercises.length 
     let currentIndex = this.state.currentQuestion + 1
     let percent = currentIndex/exerciseLen * 100
-    this.setState({percentExercises: percent})
+    this.setState({
+      percentExercises: percent,
+      currentQuestion: 0,
+      graph: parser.parse("")
+    });
+  }
+
+  componentDidMount(){
+    let taskTable = this.state.taskTable.config('task-table', 
+    ['executed', 'included', 'pending', 'enabled', 'name'], 
+    ['Executed', 'Included', 'Pending', 'Enabled', 'Name'], 
+    'There are no items to list...');
+    try{
+      let graph = parser.parse("");                
+      this.setState({parseError: "", graph: graph});
+    }
+    catch(err: any)
+    {
+        this.setState({parseError: "Error: " + err.message + "</br>" + JSON.stringify(err.location)});
+    }
+  }
+
+  // Handles changes to the form and updates the state
+  handleChange(i: number, e: any) {
+    let newExercise = this.state.exercise;
+    switch (e.target.id) {
+      case "question":
+        newExercise.question = e.target.value;
+        break;
+      case "sym":
+        newExercise.symbols[i].symbol = e.target.value;
+        break;
+      case "act":
+        newExercise.symbols[i].activity = e.target.value;
+        break;
+      case "scn":
+        newExercise.scenarios[i].scenario = e.target.value;
+        break;
+      case "hnt":
+        newExercise.scenarios[i].hint = e.target.value;
+        break;
+    }
+    this.setState({ exercise: newExercise });
   }
 
   parseSolution(e: any) {
     try {
       let graph = parser.parse(e.target.value);
-      this.setState({parseError: ""})
+      this.setState({parseError: "", graph: graph});
     } catch (err: any) {
       this.setState({parseError: (err.message + "</br>" + JSON.stringify(err.location))})
     }
@@ -100,9 +141,6 @@ class Solver extends React.Component<any, any> {
     }
   }
 
-
-
-
   render() {
     let cq = this.state.currentQuestion
     let exercise = this.state.exercises[cq]
@@ -114,9 +152,19 @@ class Solver extends React.Component<any, any> {
         <Grid container>
           <Grid item xs={9}>
             <Paper elevation={3} className="browser">
-              <h2>Test which order of activities are possible in your solution!</h2>
-              <table id="task-table"></table>  
-              <p id="accepting"></p>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+              >
+                Playground: Test which order of activities are possible in your solution
+              </AccordionSummary>
+              <AccordionDetails>
+                  <table id="task-table"></table>  
+                  <p id="accepting"></p>
+              </AccordionDetails>
+            </Accordion>              
             </Paper>
 
 
