@@ -1,4 +1,9 @@
+import $ from 'jquery';
+import {parser} from './../Util/dcr_parser.js';
+import {dynamicTable} from './../Util/dynamic_table';
+
 var taskTable;
+var graph1;
 
 function fillDcrTable(status) {
     for (var row of status)

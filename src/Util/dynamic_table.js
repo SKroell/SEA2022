@@ -1,12 +1,11 @@
-export var dynamicTable = 
-(function() {
+import $ from 'jquery';
+
+export const dynamicTable = (function() {
     
     var _tableId, _table, 
         _fields, _headers, 
         _defaultText;
     
-    function $(x) {return document.getElementById(x);} 
-
     /** Builds the row with columns from the specified names. 
      *  If the item parameter is specified, the memebers of the names array will be used as property names of the item; otherwise they will be directly parsed as text.
      */

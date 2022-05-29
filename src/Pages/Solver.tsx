@@ -1,8 +1,10 @@
 import React from 'react';
 import './../App.css';
 import './../Util/dcr.js';
+import './../Util/dcr_parser.js';
+import './../Util/dynamic_table';
+import './../Util/GUI.js';
 import {parser} from './../Util/dcr_parser.js';
-import {dynamicTable} from './../Util/dynamic_table.js';
 import { Exercise, Symbol } from '../Util/Entity/Exercise';
 
 import { Header } from '../Components/Header';
@@ -111,10 +113,11 @@ class Solver extends React.Component<any, any> {
             {/* TODO: this should load the dynamicTable */}
             <Paper elevation={3} className="browser">
               <h2>Test which order of activities are possible in your solution!</h2>
-              <h2>*** dynamicTable here</h2>
               <table id="task-table"></table>  
               <p id="accepting"></p>
             </Paper>
+
+
 
             <Paper elevation={3} className="browser">
               <h2>Here is the description for the exercise.</h2>
