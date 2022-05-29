@@ -164,7 +164,7 @@ class Creator extends React.Component<any, any> {
           <Grid item xs={9}>
             <Paper elevation={3} className="browser">
               <h2>What is the description for the exercise?!</h2>
-              <TextField fullWidth id="question" label="question" variant="filled" placeholder="Description" value={exercise.question} onChange={e => this.handleChange(0, e)} />
+              <TextField fullWidth id="question" variant="filled" placeholder="Description" value={exercise.question} onChange={e => this.handleChange(0, e)} />
               {/* <input type="text" id="question" name="question" size={65} placeholder="Description" /> */}
             </Paper>
 
