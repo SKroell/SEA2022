@@ -2,10 +2,6 @@ import React from 'react';
 import './../App.css';
 import './../Util/dcr.js';
 import './../Util/dcr_parser.js';
-import './../Util/dynamic_table';
-import './../Util/GUI.js';
-
-import { DCRGraph } from './../Util/dcr.js';
 import {parser} from './../Util/dcr_parser.js';
 
 import { Header } from '../Components/Header';
@@ -24,7 +20,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Exercise, Symbol } from '../Util/Exercise';
+import { Exercise, Symbol } from '../Util/Entity/Exercise';
 
 // Main page of the application
 //I have added fields, such that it is treated somewhat as a "Progress class"
