@@ -4,6 +4,11 @@ import './../Util/dcr.js';
 import './../Util/dcr_parser.js';
 import './../Util/dynamic_table';
 import './../Util/GUI.js';
+import { DCRGraph } from './../Util/dcr.js';
+
+import {dynamicTable} from './../Util/dynamic_table';
+
+
 import {parser} from './../Util/dcr_parser.js';
 import { Exercise, Symbol, Scenario } from '../Util/Entity/Exercise';
 
@@ -33,7 +38,8 @@ class Solver extends React.Component<any, any> {
       currentQuestion: 0,   
       percentExercises: 0,
       percentForbidden: 0,
-      percentRequired: 0                  
+      percentRequired: 0,  
+      graph1: new DCRGraph()                
     };
   }
 
@@ -44,60 +50,6 @@ class Solver extends React.Component<any, any> {
     let percent = currentIndex/exerciseLen * 100
     this.setState({percentExercises: percent})
   }
-
-  handleProgressForbiddenAllowed(){
-  
-    let correctAllowed = 0 
-    let correctForbidden = 0
-    let totalAllowed = 0
-    let totalForbidden = 0
-
-    let exercises = this.state.exercises
-    let index = this.state.currentQuestion
-    let scenarios = exercises[index].scenarios
-
-    scenarios.forEach((scenario: Scenario) => {
-
-      if(scenario.allowed === true ){
-         totalAllowed += 1
-      }
-      if(scenario.allowed === false ){
-        totalForbidden += 1
-     }
-    });  
-    
-
-    let input = (document.getElementById('ta-dcr') as HTMLInputElement).value
-    const inputArr = input.split(/\r?\n/);
-
-    inputArr.forEach((input: string) =>{
-
-      scenarios.forEach((scenario: Scenario) => {
-
-        if(scenario.allowed === true && scenario.scenario.trim() === input.trim()){
-           correctAllowed += 1
-        }
-        if(scenario.allowed === false && scenario.scenario.trim() === input.trim()){
-          correctForbidden += 1
-       }
-      });   
-    });
-
-  if(totalForbidden !== 0){   
-    let percentForbidden = correctForbidden/totalForbidden * 100
-    this.setState({percentForbidden: percentForbidden})
-  }else{
-    this.setState({percentForbidden: 100})
-  }
-
-  if(totalAllowed !==0 ){
-    let percent = correctAllowed/totalAllowed * 100
-    this.setState({percentRequired: percent})
-  }else{
-    this.setState({percentRequired: 100})
-  }
-}
-
 
   parseSolution(e: any) {
     try {
@@ -147,6 +99,8 @@ class Solver extends React.Component<any, any> {
       this.setState({currentQuestion: oldQuestion - 1}, () => {this.handleProgress()})
     }
   }
+
+
 
 
   render() {
@@ -227,10 +181,6 @@ class Solver extends React.Component<any, any> {
               <ListItemButton onClick={() => this.prevQuestion()}>
                 <ListItemIcon><NextIcon /></ListItemIcon>
                 <ListItemText primary="Previous exercise" />
-              </ListItemButton>
-              <ListItemButton onClick={() => this.handleProgressForbiddenAllowed()}>
-                <ListItemIcon><NextIcon /></ListItemIcon>
-                <ListItemText primary="Check solution!" />
               </ListItemButton>
             </List>
             </Paper>
