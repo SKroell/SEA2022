@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOMServer from "react-dom/server";
 import './../App.css';
 import './../Util/dcr.js';
 import './../Util/dcr_parser.js';
@@ -12,6 +11,7 @@ import {parser} from './../Util/dcr_parser.js';
 import { Header } from '../Components/Header';
 import { HelpSolver } from '../Components/Help';
 import { Footer } from '../Components/Footer';
+import DynamicTable from '../Util/DynamicTable';
 
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
@@ -54,19 +54,10 @@ class Solver extends React.Component<any, any> {
     });
   }
 
-  componentDidMount(){
-    let taskTable = this.state.taskTable.config('task-table', 
-    ['executed', 'included', 'pending', 'enabled', 'name'], 
-    ['Executed', 'Included', 'Pending', 'Enabled', 'Name'], 
-    'There are no items to list...');
-    try{
-      let graph = parser.parse("");                
-      this.setState({parseError: "", graph: graph});
-    }
-    catch(err: any)
-    {
-        this.setState({parseError: "Error: " + err.message + "</br>" + JSON.stringify(err.location)});
-    }
+  executePlayground(row: string){
+    var graph = this.state.graph;
+    graph.execute(row);
+    this.setState({graph: graph});
   }
 
   // Handles changes to the form and updates the state
@@ -99,7 +90,6 @@ class Solver extends React.Component<any, any> {
     } catch (err: any) {
       this.setState({parseError: (err.message + "</br>" + JSON.stringify(err.location))})
     }
-
   }
 
   // Adds a new symbol/activity mapping to the exercise
@@ -161,8 +151,15 @@ class Solver extends React.Component<any, any> {
                 Playground: Test which order of activities are possible in your solution
               </AccordionSummary>
               <AccordionDetails>
-                  <table id="task-table"></table>  
-                  <p id="accepting"></p>
+                  <DynamicTable 
+                    tableId='task-table' 
+                    fields={['executed', 'included', 'pending', 'enabled', 'name']}
+                    headers={['Executed', 'Included', 'Pending', 'Enabled', 'Name']}
+                    defaultText="There are no items to list..."
+                    data = {this.state.graph.status() === undefined ? [] : this.state.graph.status()}
+                    onExecute = {this.executePlayground.bind(this)}
+                    accepting = {this.state.graph.isAccepting()}
+                  />
               </AccordionDetails>
             </Accordion>              
             </Paper>
