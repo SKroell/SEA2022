@@ -56,29 +56,6 @@ class Solver extends React.Component<any, any> {
     this.setState({graph: graph});
   }
 
-  // Handles changes to the form and updates the state
-  handleChange(i: number, e: any) {
-    let newExercise = this.state.exercise;
-    switch (e.target.id) {
-      case "question":
-        newExercise.question = e.target.value;
-        break;
-      case "sym":
-        newExercise.symbols[i].symbol = e.target.value;
-        break;
-      case "act":
-        newExercise.symbols[i].activity = e.target.value;
-        break;
-      case "scn":
-        newExercise.scenarios[i].scenario = e.target.value;
-        break;
-      case "hnt":
-        newExercise.scenarios[i].hint = e.target.value;
-        break;
-    }
-    this.setState({ exercise: newExercise });
-  }
-
   parseSolution(e: any) {
     try {
       let graph = parser.parse(e.target.value);
