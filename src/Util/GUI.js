@@ -1,9 +1,11 @@
 import $ from 'jquery';
 import {parser} from './../Util/dcr_parser.js';
 import {dynamicTable} from './../Util/dynamic_table';
+import { DCRGraph } from './dcr.js';
 
 var taskTable;
-var graph1;
+let graph1 = new DCRGraph()
+window.graph1 = graph1.execute()
 
 function fillDcrTable(status) {
     for (var row of status)
@@ -16,6 +18,7 @@ function fillDcrTable(status) {
     taskTable.load(status);
     updateAccepting(graph1.isAccepting());
 }
+
 
 function updateAccepting(status) {
     document.getElementById("accepting").innerHTML = (status ? "Accepting" : "Not accepting");

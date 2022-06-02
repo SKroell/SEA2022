@@ -4,6 +4,11 @@ import './../Util/dcr.js';
 import './../Util/dcr_parser.js';
 import './../Util/dynamic_table';
 import './../Util/GUI.js';
+import { DCRGraph } from './../Util/dcr.js';
+
+import {dynamicTable} from './../Util/dynamic_table';
+
+
 import {parser} from './../Util/dcr_parser.js';
 import { Exercise, Symbol, Scenario } from '../Util/Entity/Exercise';
 
@@ -33,7 +38,8 @@ class Solver extends React.Component<any, any> {
       currentQuestion: 0,   
       percentExercises: 0,
       percentForbidden: 0,
-      percentRequired: 0                  
+      percentRequired: 0,  
+      graph1: new DCRGraph()                
     };
   }
 
@@ -98,6 +104,31 @@ class Solver extends React.Component<any, any> {
   }
 }
 
+  checkSolution(){
+    let howCorrect = []
+
+    let exercises = this.state.exercises
+    let index = this.state.currentQuestion
+    let solution = exercises[index].solution
+
+    let input = (document.getElementById('ta-dcr') as HTMLInputElement).value
+    const inputArr = input.split(/\r?\n/);
+    const solutionArr = solution.split(/\r?\n/);
+   
+
+    solutionArr.forEach((element: string)=> {
+      inputArr.forEach((input: string) =>{
+
+        if(element.trim() === input.trim())
+          howCorrect.push(true)
+      });
+    });
+
+    let correctness = howCorrect.length / solutionArr.length * 100
+
+    alert(correctness)
+  }
+
 
   parseSolution(e: any) {
     try {
@@ -147,6 +178,8 @@ class Solver extends React.Component<any, any> {
       this.setState({currentQuestion: oldQuestion - 1}, () => {this.handleProgress()})
     }
   }
+
+
 
 
   render() {
@@ -228,7 +261,7 @@ class Solver extends React.Component<any, any> {
                 <ListItemIcon><NextIcon /></ListItemIcon>
                 <ListItemText primary="Previous exercise" />
               </ListItemButton>
-              <ListItemButton onClick={() => this.handleProgressForbiddenAllowed()}>
+              <ListItemButton onClick={() => this.checkSolution()}>
                 <ListItemIcon><NextIcon /></ListItemIcon>
                 <ListItemText primary="Check solution!" />
               </ListItemButton>
