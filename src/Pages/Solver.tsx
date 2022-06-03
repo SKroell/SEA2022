@@ -17,10 +17,10 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import HintIcon from '@mui/icons-material/Lightbulb';
 import NextIcon from '@mui/icons-material/PlayArrow';
 import LinearProgress from '@mui/material/LinearProgress';
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgressWithLabel from '@mui/material/CircularProgressWithLabel';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Exercise, Symbol } from '../Util/Entity/Exercise';
+import { Exercise, Symbol, Scenario } from '../Util/Entity/Exercise';
 
 // Main page of the application
 //I have added fields, such that it is treated somewhat as a "Progress class"
@@ -59,10 +59,67 @@ class Solver extends React.Component<any, any> {
   parseSolution(e: any) {
     try {
       let graph = parser.parse(e.target.value);
+      this.checkScenarios();
       this.setState({parseError: "", graph: graph});
     } catch (err: any) {
       this.setState({parseError: (err.message + "</br>" + JSON.stringify(err.location))})
     }
+  }
+
+  checkScenarios() {
+    let graph = this.state.graph;
+    let currentExercise = this.state.exercises[this.state.currentQuestion];
+    let status = graph.status();
+    let allowedCount = 0;
+    let forbiddenCount = 0;
+
+    // Check if all symbols are defined
+    let allDefined = true;
+    for (let i = 0; i < currentExercise.symbols.length; i++) {
+      let symbol = currentExercise.symbols[i];
+      let defined = false;
+      for (let j = 0; j < graph.status().length; j++) {
+        let row = status[j];
+        if (row["name"] === symbol.symbol) {
+          defined = true;
+          break;
+        }
+      }
+      if (!defined) {
+        allDefined = false;
+        break;
+      }
+    }
+
+    // If all symbols are not defined we dont need to continue  
+    if(!allDefined){
+      console.log("Not all symbols are defined");
+      this.setState({percentForbidden: 0, percentRequired: 0});
+      return;
+    }
+
+    // Foreach scenario
+    for (let i = 0; i < currentExercise.scenarios.length; i++) {
+      let scenario = currentExercise.scenarios[i];
+      let allowed = scenario.allowed;
+      let steps = scenario.scenario.split(",");
+
+      // Execute all steps and see if the graph is accepting
+      graph.reset();
+      for (let j = 0; j < steps.length; j++) {
+        let step = steps[j];
+        graph.execute(step);
+      }
+      if(graph.isAccepting) {
+        allowed ? allowedCount++ : forbiddenCount++; 
+        console.log("ACCEPTED: Scenario " + i + ": " + scenario.scenario + " is " + (allowed ? "allowed" : "forbidden"));
+      } else {
+        console.log("Not accepting: " + scenario.scenario);
+      }
+    }
+    let percentForbidden = forbiddenCount / currentExercise.scenarios.filter((x:Scenario) => x.allowed === false).length * 100;
+    let percentRequired = allowedCount / currentExercise.scenarios.filter((x:Scenario) => x.allowed === true).length * 100;
+    this.setState({percentForbidden: percentForbidden, percentRequired: percentRequired});
   }
 
   // Adds a new symbol/activity mapping to the exercise
@@ -218,10 +275,9 @@ class Solver extends React.Component<any, any> {
               <LinearProgress variant="determinate" color="primary" value={this.state.percentExercises} />
 
               <ListItemText primary="Progress for Allowed Scenarios!" />
-              
-              <CircularProgress variant="determinate" value={this.state.percentRequired} />
+              <CircularProgressWithLabel variant="determinate" value={this.state.percentRequired} />
               <ListItemText primary="Progress for Forbidden Scenarios!" />
-              <CircularProgress variant="determinate" value={this.state.percentForbidden} />
+              <CircularProgressWithLabel variant="determinate" value={this.state.percentForbidden} />
             </List>
             </Paper>
           </Grid>
