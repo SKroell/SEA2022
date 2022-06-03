@@ -11,16 +11,46 @@ import DynamicTable from '../Util/DynamicTable';
 
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { Accordion, AccordionDetails, AccordionSummary, Alert, Button, List, ListItemButton, ListItemIcon, ListItemText, Pagination, TextField, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, Button, List, ListItemButton, ListItemIcon, ListItemText, Pagination, TextField, Typography } from '@mui/material';
 import HelpIcon from '@mui/icons-material/Help';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import HintIcon from '@mui/icons-material/Lightbulb';
 import NextIcon from '@mui/icons-material/PlayArrow';
 import LinearProgress from '@mui/material/LinearProgress';
-import CircularProgressWithLabel from '@mui/material/CircularProgressWithLabel';
+import CircularProgress, {
+  CircularProgressProps,
+} from '@mui/material/CircularProgress';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Exercise, Symbol, Scenario } from '../Util/Entity/Exercise';
+
+function CircularProgressWithLabel(
+  props: CircularProgressProps & { value: number },
+) {
+  return (
+    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+      <CircularProgress variant="determinate" {...props} />
+      <Box
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          position: 'absolute',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Typography
+          variant="caption"
+          component="div"
+          color="text.secondary"
+        >{`${Math.round(props.value)}%`}</Typography>
+      </Box>
+    </Box>
+  );
+}
 
 // Main page of the application
 //I have added fields, such that it is treated somewhat as a "Progress class"
