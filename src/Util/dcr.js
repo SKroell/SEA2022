@@ -374,7 +374,7 @@ export class DCRGraph {
   }
 
   reset() {
-    this.events = new Map();
+    this.events.clear();
   }
 
 }

@@ -8,7 +8,7 @@ type HeaderProps = {
   title: string
 }
 
-export const Header = ({ title }: HeaderProps) => {
+const Header = ({ title }: HeaderProps) => {
   return (
     <>
       <AppBar position="static">
@@ -27,3 +27,5 @@ export const Header = ({ title }: HeaderProps) => {
     </>
   );
 }
+
+export default Header

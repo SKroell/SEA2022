@@ -1,6 +1,6 @@
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import { Header } from '../Components/Header';
+import Header from '../Components/Header';
 import './../App.css';
 
 const Home = () => {
