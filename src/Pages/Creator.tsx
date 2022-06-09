@@ -1,12 +1,12 @@
 import React from 'react';
 import './../App.css';
 import './../Util/dcr.js';
-import {parser} from './../Util/dcr_parser.js';
+import parser from './../Util/dcr_parser.js';
 
 import { Exercise, Scenario, Symbol } from '../Util/Entity/Exercise';
-import { Header } from '../Components/Header';
 import { HelpCreator } from '../Components/Help';
-import { Footer } from '../Components/Footer';
+import Header from '../Components/Header';
+import Footer from '../Components/Footer';
 
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid';
