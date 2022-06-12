@@ -1,6 +1,9 @@
 // Main Import
-import React from 'react';
+import React ,{Component} from 'react';
 import './../App.css';
+
+//Import dynamic modal
+import { Modal,ModalManager,Effect} from 'react-dynamic-modal';
 
 // We use MUI for our styling see https://mui.com/
 import {
@@ -27,6 +30,23 @@ import CircularProgressWithLabel from '../Util/CircularProgressWithLabel';
 import { HelpSolver } from '../Components/Help';
 import { Exercise, Symbol, Scenario } from '../Util/Entity/Exercise';
 import SuccessDialog from '../Components/SuccessDialog';
+
+
+//TODO: move this into a seperate file
+class MyModal extends Component< {text: string[], onRequestClose: any}>{
+  render(){
+     const { text, onRequestClose } = this.props;
+     return (
+        <Modal
+           onRequestClose={onRequestClose}
+           effect={Effect.Fall}>
+            <h2>Here are some hints for this exercise!</h2>
+
+            <p>{text}</p>
+        </Modal>
+     );
+  }
+}
 
 // Main page of the application
 // I have added fields, such that it is treated somewhat as a "Progress class"
@@ -159,9 +179,24 @@ class Solver extends React.Component<any, any> {
       this.setState({ exercises: exercises });
     }
   }
-
+  //This displays all of the hints for a question 
+  //TODO: Need to implement that each hint is placed in a newline. Also we might not want to display all of the hints at once.
   getHint(){
-    throw new Error("not Implemented") // TODO
+    let exercises = this.state.exercises
+    let index = this.state.currentQuestion
+    const hints: string[] = []
+    exercises[index].scenarios.forEach((scenario:any) => {
+      if(scenario.hint !== ""){
+        hints.push(scenario.hint)
+        hints.push("\n")
+      }
+    });
+
+    if(hints.length === 0){
+      hints.push("No hints for this exercise, good luck!")
+    }
+
+    ModalManager.open(<MyModal text={hints} onRequestClose={() => true}/>);
   }
 
   nextQuestion(){
@@ -274,7 +309,7 @@ class Solver extends React.Component<any, any> {
                 <ListItemIcon><UploadFileIcon /></ListItemIcon>
                 <ListItemText primary="Load from File" />
               </ListItemButton>
-              <ListItemButton onClick={() => this.getHint()}>
+              <ListItemButton onClick={this.getHint.bind(this)}>
                 <ListItemIcon><HintIcon /></ListItemIcon>
                 <ListItemText primary="Get hint" />
               </ListItemButton>
@@ -296,7 +331,7 @@ class Solver extends React.Component<any, any> {
               aria-labelledby="nested-list-subheader"
             >
               {/* TODO: the line progressbar should probably be moved to the top of the page */}
-              
+            
               <ListItemText primary="Progress for Questions!" />
              
               <LinearProgress variant="determinate" color="primary" value={this.state.percentExercises} />
