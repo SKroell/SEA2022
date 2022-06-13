@@ -1,9 +1,9 @@
 // Main Import
-import React ,{Component} from 'react';
+import React from 'react';
 import './../App.css';
 
 //Import dynamic modal
-import { Modal,ModalManager,Effect} from 'react-dynamic-modal';
+import { ModalManager} from 'react-dynamic-modal';
 
 // We use MUI for our styling see https://mui.com/
 import {
@@ -30,23 +30,8 @@ import CircularProgressWithLabel from '../Util/CircularProgressWithLabel';
 import { HelpSolver } from '../Components/Help';
 import { Exercise, Symbol, Scenario } from '../Util/Entity/Exercise';
 import SuccessDialog from '../Components/SuccessDialog';
+import DynamicModal from '../Util/DynamicModal';
 
-
-//TODO: move this into a seperate file
-class MyModal extends Component< {text: string[], onRequestClose: any}>{
-  render(){
-     const { text, onRequestClose } = this.props;
-     return (
-        <Modal
-           onRequestClose={onRequestClose}
-           effect={Effect.Fall}>
-            <h2>Here are some hints for this exercise!</h2>
-
-            <p>{text}</p>
-        </Modal>
-     );
-  }
-}
 
 // Main page of the application
 // I have added fields, such that it is treated somewhat as a "Progress class"
@@ -196,7 +181,7 @@ class Solver extends React.Component<any, any> {
       hints.push("No hints for this exercise, good luck!")
     }
 
-    ModalManager.open(<MyModal text={hints} onRequestClose={() => true}/>);
+    ModalManager.open(<DynamicModal text={hints} onRequestClose={() => true}/>);
   }
 
   nextQuestion(){
