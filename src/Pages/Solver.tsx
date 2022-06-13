@@ -13,7 +13,8 @@ import {
 import HelpIcon from '@mui/icons-material/Help';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import HintIcon from '@mui/icons-material/Lightbulb';
-import NextIcon from '@mui/icons-material/PlayArrow';
+import NextIcon from '@mui/icons-material/ArrowCircleRight';
+import PreviousIcon from '@mui/icons-material/ArrowCircleLeft';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 // Import our custom components & utilities
@@ -27,6 +28,7 @@ import CircularProgressWithLabel from '../Util/CircularProgressWithLabel';
 import { HelpSolver } from '../Components/Help';
 import { Exercise, Symbol, Scenario } from '../Util/Entity/Exercise';
 import SuccessDialog from '../Components/SuccessDialog';
+import withRouter from '../Util/withRouter';
 
 // Main page of the application
 // I have added fields, such that it is treated somewhat as a "Progress class"
@@ -40,10 +42,20 @@ class Solver extends React.Component<any, any> {
       percentExercises: 0,
       percentForbidden: 0,
       percentRequired: 0,  
-      solution: "",
       graph: parser.parse(""),    
-      showSuccessDialog: false,            
+      showSuccessDialog: false,           
     };
+  }
+
+  componentDidMount() {
+    this.loadExercises();
+  }
+
+  // Load the exercises from the file in props.exerciseToLoad
+  loadExercises = () => {
+    if (this.props.location.state) {
+      this.setState({ exercises: this.props.location.state.exerciseToLoad as Exercise[] });
+    }
   }
 
   // This function gets the progress in percentage
@@ -53,7 +65,6 @@ class Solver extends React.Component<any, any> {
     let percent = currentIndex/exerciseLen * 100
     this.setState({
       percentExercises: percent,
-      currentQuestion: 0,
       graph: parser.parse("")
     });
   }
@@ -67,15 +78,18 @@ class Solver extends React.Component<any, any> {
 
   // Continously parse the solution and check for errors
   parseSolution(e: any) {
+    let exercises = this.state.exercises;
+    let solution = e.target.value;
+    exercises[this.state.currentQuestion].studentSolution = solution;    
     try {
       let graph = parser.parse(e.target.value);
       // Check if we pass the given scenarios and update progress
       this.checkScenarios();
       // If the graph is valid, clear any error messages
-      this.setState({parseError: "", graph: graph, solution: e.target.value});
+      this.setState({parseError: "", graph: graph, exercises: exercises});
     } catch (err: any) {
       // parse will throw an exception on error so we catch it here
-      this.setState({parseError: (err.message + "</br>" + JSON.stringify(err.location)), solution: e.target.value});
+      this.setState({parseError: (err.message + "</br>" + JSON.stringify(err.location)), exercises: exercises});
     }
   }
 
@@ -122,15 +136,17 @@ class Solver extends React.Component<any, any> {
       let steps = scenario.scenario.split(",");
 
       // Execute all steps and see if the graph is accepting
-      graph = parser.parse(this.state.solution); // Reset graph
+      graph = parser.parse(currentExercise.studentSolution); // Reset graph
+      let failed = false;
       for (let j = 0; j < steps.length; j++) {
         let step = steps[j];
+        if(!graph.getEvent(step).enabled()) failed = true;
         graph.execute(step);
       }
       console.log(graph.status());
-      if(graph.isAccepting() && allowed){
+      if(graph.isAccepting() && allowed && !failed){
         allowedCount++;
-      } else if(!graph.isAccepting() && !allowed){
+      } else if((!graph.isAccepting() || failed) && !allowed){
         forbiddenCount++;
       } else {
         console.log("Error in solution: " + scenario.scenario + " Expected: " + allowed + " Got: " + graph.isAccepting());
@@ -164,11 +180,18 @@ class Solver extends React.Component<any, any> {
     throw new Error("not Implemented") // TODO
   }
 
+  changePage(page: number) {
+    this.setState({currentQuestion: page-1});
+    this.resetGraph()
+  }
+
   nextQuestion(){
     let exercises = this.state.exercises
     let oldQuestion = this.state.currentQuestion
     if ( exercises.length > oldQuestion + 1){
       this.setState({currentQuestion: oldQuestion + 1, showSuccessDialog: false}, () => {this.handleProgress()})
+    } else {
+      this.setState({showSuccessDialog: false}, () => {this.handleProgress()})
     }
   }
 
@@ -180,7 +203,7 @@ class Solver extends React.Component<any, any> {
   }
 
   resetGraph() {
-    let graph = parser.parse(this.state.solution)
+    let graph = parser.parse(this.state.exercises[this.state.currentQuestion].studentSolution);
     this.setState({graph: graph})
   }
 
@@ -191,7 +214,9 @@ class Solver extends React.Component<any, any> {
     return (
       <div className="App">
         <Header title="Solve a DCR training exercise!" />
-        <Pagination variant="outlined" shape="rounded" count={this.state.exercises.length} page={cq+1} onChange={(e, page) => this.setState({currentQuestion: page-1})}/>
+        <Pagination variant="outlined" shape="rounded" count={this.state.exercises.length} page={cq+1} onChange={(e, page) => this.changePage(page)}/>
+        <br />
+        <LinearProgress variant="determinate" color="primary" value={this.state.percentExercises} />
         <Grid container>
           <Grid item xs={9}>
 
@@ -232,10 +257,10 @@ class Solver extends React.Component<any, any> {
               <h2>And these are the symbols and the activities that they represent!</h2>
               <Grid container spacing={2} component="form"> 
                 {exercise.symbols.map((symbol: Symbol, index: number) => (
-                  <>
+                  <React.Fragment key={index}>
                     <Grid item xs={6}><TextField fullWidth id="sym" label="Symbol" variant="outlined" value={symbol.symbol} InputProps={{readOnly: true}} /></Grid>
                     <Grid item xs={6}><TextField fullWidth id="act" label="Activity" variant="filled" value={symbol.activity} InputProps={{readOnly: true}} /></Grid>
-                  </>
+                  </React.Fragment>
                 ))}
               </Grid>
             </Paper>
@@ -249,7 +274,7 @@ class Solver extends React.Component<any, any> {
                 label="Your Solution:"
                 multiline
                 rows={4}
-                defaultValue="*** DCR graph here"
+                value={exercise.studentSolution}
                 onChange={e => this.parseSolution(e)}
               />
               {this.state.parseError === "" ? "" : <Alert severity="error">{this.state.parseError}</Alert>}
@@ -283,7 +308,7 @@ class Solver extends React.Component<any, any> {
                 <ListItemText primary="Next exercise" />
               </ListItemButton>
               <ListItemButton onClick={() => this.prevQuestion()}>
-                <ListItemIcon><NextIcon /></ListItemIcon>
+                <ListItemIcon><PreviousIcon /></ListItemIcon>
                 <ListItemText primary="Previous exercise" />
               </ListItemButton>
             </List>
@@ -295,12 +320,6 @@ class Solver extends React.Component<any, any> {
               component="nav"
               aria-labelledby="nested-list-subheader"
             >
-              {/* TODO: the line progressbar should probably be moved to the top of the page */}
-              
-              <ListItemText primary="Progress for Questions!" />
-             
-              <LinearProgress variant="determinate" color="primary" value={this.state.percentExercises} />
-
               <ListItemText primary="Progress for Allowed Scenarios!" />
               <CircularProgressWithLabel variant="determinate" value={this.state.percentRequired} />
               <ListItemText primary="Progress for Forbidden Scenarios!" />
@@ -313,6 +332,7 @@ class Solver extends React.Component<any, any> {
         <SuccessDialog
           open={this.state.showSuccessDialog}
           onClose={this.nextQuestion.bind(this)}
+          last={this.state.currentQuestion === this.state.exercises.length - 1}
         />
         <Footer />
       </div>
@@ -320,4 +340,4 @@ class Solver extends React.Component<any, any> {
   }
 }
 
-export default Solver;
+export default withRouter(Solver);

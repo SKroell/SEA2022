@@ -20,10 +20,11 @@ const Transition = React.forwardRef(function Transition(
 export interface SuccessDialogProps {
   open: boolean;
   onClose: () => void;
+  last: boolean;
 }
 
 export default function SuccessDialog(props: SuccessDialogProps) {
-  const { onClose, open } = props;
+  const { onClose, open, last } = props;
 
   const handleClose = () => {
     onClose();
@@ -41,12 +42,14 @@ export default function SuccessDialog(props: SuccessDialogProps) {
         <DialogTitle>{"You did it!"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
-            Congratulations you have successfully completed the task!
-            Lets go to the next question!
+            Congratulations you have successfully completed the {last ? "exercises set" : "task"}!
+            {last ? "" : "Lets go to the next question!"}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Next Question</Button>
+          {last 
+          ? <Button onClick={handleClose}>Close</Button>
+          : <Button onClick={handleClose}>Next Question</Button>}
         </DialogActions>
       </Dialog>
     </div>
