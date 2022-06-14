@@ -1,21 +1,31 @@
 import { render, screen } from '@testing-library/react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { Z_UNKNOWN } from 'zlib';
-import SuccessDialog, { SuccessDialogProps } from '../Components/SuccessDialog';
-import SuccesDialogProps from '../Components/SuccessDialog';
+import SuccessDialog from '../Components/SuccessDialog';
+
 
 describe("Testing succesDialog component", () => {
-    it('should display succesDialog', () => {
+    it('should display option to go to next question', () => {
 
-        const text = "Congratulations you have successfully completed the task! Lets go to the next question!"
+        const text = "Lets go to the next question!"
 
-        render(<SuccessDialog 
-                    open = {true}
-                    onClose = {()=> 2+3} 
-                    last = {false}   />);
+        render(<SuccessDialog
+            open={true}
+            onClose={() => "done"}
+            last={false}
+        />);
 
+        expect(screen.getByText(text, { exact: false })).toBeInTheDocument();
+    })
+    it('should display that it was last exercise', () => {
 
-        expect(screen.getByText(text)).toBeInTheDocument();
+        const text = "Congratulations you have successfully completed the exercises set!"
+
+        render(<SuccessDialog
+            open={true}
+            onClose={() => "done"}
+            last={true}
+        />);
+
+        expect(screen.getByText(text, { exact: false })).toBeInTheDocument();
     })
 })
 
