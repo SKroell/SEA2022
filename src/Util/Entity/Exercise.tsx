@@ -14,10 +14,12 @@ export class Exercise {
   symbols: Symbol[];
   scenarios: Scenario[];
   solution: string;
+  studentSolution: string;
   constructor() {
     this.question = "";
     this.symbols = [{ symbol: "", activity: "" }];
     this.scenarios = [{ scenario: "", allowed: true, hint: "" }];
     this.solution = "";
+    this.studentSolution = "";
   }
 }

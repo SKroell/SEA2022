@@ -1,3 +1,0 @@
-function import_file() {
-    
-}
