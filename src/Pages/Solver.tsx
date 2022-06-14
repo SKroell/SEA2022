@@ -177,10 +177,15 @@ class Solver extends React.Component<any, any> {
     const reader = new FileReader();
     reader.readAsText(file);
     reader.onload = () => {
-      const exercises = JSON.parse(reader.result as string);
-      this.setState({ exercises: exercises });
+      this.parseFileAsExercises(reader.result)  
     }
   }
+
+  parseFileAsExercises(file:any){
+    const exercises = JSON.parse(file as string);
+    this.setState({ exercises: exercises });
+  }
+
   //This displays all of the hints for a question 
   //TODO: Need to implement that each hint is placed in a newline. Also we might not want to display all of the hints at once.
   getHint(){

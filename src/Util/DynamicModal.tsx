@@ -1,5 +1,5 @@
 import React ,{Component} from 'react';
-import { Modal,ModalManager,Effect} from 'react-dynamic-modal';
+import { Modal, Effect} from 'react-dynamic-modal';
 
 class DynamicModal extends Component< {text: string[], onRequestClose: any}>{
     render(){
@@ -9,7 +9,6 @@ class DynamicModal extends Component< {text: string[], onRequestClose: any}>{
              onRequestClose={onRequestClose}
              effect={Effect.Fall}>
               <h2>Here are some hints for this exercise!</h2>
-  
               <p>{text}</p>
           </Modal>
        );
