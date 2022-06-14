@@ -1,0 +1,69 @@
+[
+    {
+        "question": "When you get up in the morning you must eat your breakfast.",
+        "symbols": [
+            {
+                "symbol": "A",
+                "activity": "get up in the morning"
+            },
+            {
+                "symbol": "B",
+                "activity": "eat your breakfast"
+            }
+        ],
+        "scenarios": [
+            {
+                "scenario": "A,B",
+                "allowed": true,
+                "hint": "What must you do after you get up?"
+            },
+            {
+                "scenario": "B",
+                "allowed": true,
+                "hint": "Breakfast in bed is great!"
+            },
+            {
+                "scenario": "A,B,B",
+                "allowed": true,
+                "hint": "I'm so hungry I could eat 2 breakfasts after I get up! "
+            },
+            {
+                "scenario": "A",
+                "allowed": false,
+                "hint": "Don't skip breakfast after you get up!"
+            }
+        ],
+        "solution": "A(0,1,0) \nB(0,1,0)\nA *--> B"
+    },
+    {
+        "question": "You must write an assignment before you can hand it in. ",
+        "symbols": [
+            {
+                "symbol": "w",
+                "activity": "write an assignment"
+            },
+            {
+                "symbol": "h",
+                "activity": "hand it in"
+            }
+        ],
+        "scenarios": [
+            {
+                "scenario": "w",
+                "allowed": true,
+                "hint": "Maybe you wrote an assignment but did not need to hand it in."
+            },
+            {
+                "scenario": "w,h",
+                "allowed": true,
+                "hint": "What is the sequence of events that should be allowed?"
+            },
+            {
+                "scenario": "h,w",
+                "allowed": false,
+                "hint": "Don't hand in a blank assignment!"
+            }
+        ],
+        "solution": "w(0,1,0) \nh(0,1,0)\nw -->* h"
+    }
+]

@@ -74,7 +74,7 @@ class DynamicTable extends React.Component<any, any> {
                 {this.props.fields.map((field: string, index: number) => {
                   if(field==="name") return <> </>;
                   return (
-                    <TableCell>{row[field].toString()}</TableCell>
+                    <TableCell key={index}>{row[field].toString()}</TableCell>
                   );
                 })}
                   <TableCell>
