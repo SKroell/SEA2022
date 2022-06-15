@@ -10,7 +10,7 @@ $ npm start
 
 This will automatically start a browser on localhost:3000.
 
-If you don’t have npm already, you will need to do the following steps before doing ``npm start” the first time:
+If you don’t have npm already, you will need to do the following steps before doing ”npm start” the first time:
 
 1. Download and install node.js from https://nodejs.org
 
@@ -21,5 +21,6 @@ $ npm install
 3. Load jquery and modal modules, if necessary, as follows in bash or command prompt from the root folder:
 
 $ npm i jquery –save
+
 $ npm i react-dynamic-modal –save
 
