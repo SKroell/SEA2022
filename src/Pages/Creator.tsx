@@ -196,7 +196,7 @@ class Creator extends React.Component<any, any> {
             </Paper>
 
             <Paper elevation={3} className="browser">
-              <h2>Let's check using a reference solution! (optional)</h2>
+              <h2>You can record a reference solution here! (optional)</h2>
               <TextField fullWidth
                 id="outlined-multiline-static"
                 label="Reference Solution:"
