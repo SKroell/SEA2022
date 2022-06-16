@@ -60,7 +60,8 @@ class Solver extends React.Component<any, any> {
   // Load the exercises from the file in props.exerciseToLoad
   loadExercises = () => {
     if (this.props.location.state) {
-      this.setState({ exercises: this.props.location.state.exerciseToLoad as Exercise[] });
+      this.setState({ exercises: this.props.location.state.exerciseToLoad as Exercise[] }, 
+        () => {this.handleProgress()});
     }
   }
 
@@ -138,7 +139,7 @@ class Solver extends React.Component<any, any> {
     // Again this is not nicely done at all, but it works. I think
     for (let i = 0; i < currentExercise.scenarios.length; i++) {
       let scenario = currentExercise.scenarios[i];
-      let allowed = scenario.allowed;
+      let allowed = scenario.allowed; // true if allowed and false if forbidden
       let steps = scenario.scenario.split(",");
 
       // Execute all steps and see if the graph is accepting
@@ -182,7 +183,7 @@ class Solver extends React.Component<any, any> {
     }
   }
   //This displays all of the hints for a question 
-  //TODO: Need to implement that each hint is placed in a newline. Also we might not want to display all of the hints at once.
+  //TODO: We might not want to display all of the hints at once.
   getHint(){
     let exercises = this.state.exercises
     let index = this.state.currentQuestion
@@ -202,8 +203,11 @@ class Solver extends React.Component<any, any> {
   }
 
   changePage(page: number) {
-    this.setState({currentQuestion: page-1});
+    let exercises = this.state.exercises
+    let oldQuestion = this.state.currentQuestion
+    this.setState({currentQuestion: page-1}, () => {this.handleProgress()});
     this.resetGraph()
+    exercises[oldQuestion + 1].studentSolution = "" // not ideal, but does leave first solution intact
   }
 
   nextQuestion(){
@@ -211,6 +215,7 @@ class Solver extends React.Component<any, any> {
     let oldQuestion = this.state.currentQuestion
     if ( exercises.length > oldQuestion + 1){
       this.setState({currentQuestion: oldQuestion + 1, showSuccessDialog: false}, () => {this.handleProgress()})
+      exercises[oldQuestion + 1].studentSolution = "" // not ideal, but does leave first solution intact
     } else {
       this.setState({showSuccessDialog: false}, () => {this.handleProgress()})
     }

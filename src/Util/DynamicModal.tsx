@@ -8,9 +8,8 @@ class DynamicModal extends Component< {text: string[], onRequestClose: any}>{
           <Modal
              onRequestClose={onRequestClose}
              effect={Effect.Fall}>
-              <h2>Here are some hints for this exercise!</h2>
-  
-              <p>{text}</p>
+               <h2>Here are some hints for this exercise!</h2>
+               <p id="p-wrap">{text}</p>
           </Modal>
        );
     }
